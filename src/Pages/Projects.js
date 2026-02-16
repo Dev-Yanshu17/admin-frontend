@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import LocationPicker from "../components/LocationPicker"; // Fixed import path
 import "./Projects.css";
 
 export default function Projects() {
@@ -11,12 +12,21 @@ export default function Projects() {
   const [amenitiesInput, setAmenitiesInput] = useState("");
   const [imageErrors, setImageErrors] = useState({});
   const [replaceImages, setReplaceImages] = useState(false);
-const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
+  const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
+
+  // Add this at the top of your Projects.js (after imports) to test
+const testLocationSelect = (address, lat, lng) => {
+  console.log('Location selected:', { address, lat, lng });
+};
+
+  // Location state
+  const [locationAddress, setLocationAddress] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
   const [form, setForm] = useState({
     projectName: "",
     projectType: "flat",
-    location: "",
     totalWings: "",
     totalFloors: "",
     perFloorHouse: "",
@@ -48,12 +58,13 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
     // ===== BASIC INFO =====
     formData.append("projectName", form.projectName);
     formData.append("projectType", form.projectType);
-
-     formData.append("replaceImages", replaceImages);
-  formData.append("replaceFloorPlans", replaceFloorPlans);
+    formData.append("replaceImages", replaceImages);
+    formData.append("replaceFloorPlans", replaceFloorPlans);
     
-    // ===== LOCATION - SINGLE STRING =====
-    formData.append("location", form.location);
+    // ===== LOCATION - SEPARATE FIELDS =====
+    formData.append("location", locationAddress);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
 
     // ===== PROJECT TYPE SPECIFIC =====
     if (form.projectType === "flat") {
@@ -114,12 +125,14 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
     setForm({
       projectName: "",
       projectType: "flat",
-      location: "",
       totalWings: "",
       totalFloors: "",
       perFloorHouse: "",
       totalPlots: ""
     });
+    setLocationAddress("");
+    setLatitude("");
+    setLongitude("");
     setAmenitiesInput("");
     setImages([]);
     setFloorPlans([]);
@@ -134,14 +147,16 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
     setForm({
       projectName: project.projectName || "",
       projectType: project.projectType || "flat",
-      location: typeof project.location === 'object' 
-        ? (project.location.fullAddress || project.location.name || JSON.stringify(project.location))
-        : (project.location || ""),
       totalWings: project.totalWings || "",
       totalFloors: project.totalFloors || "",
       perFloorHouse: project.perFloorHouse || "",
       totalPlots: project.totalPlots || ""
     });
+    
+    // Set location data
+    setLocationAddress(project.location || "");
+    setLatitude(project.latitude || "");
+    setLongitude(project.longitude || "");
     
     setAmenitiesInput((project.amenities || []).join(", "));
     setShowForm(true);
@@ -166,13 +181,6 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
   /* ================= RENDER LOCATION DISPLAY ================= */
   const renderLocation = (project) => {
     if (!project.location) return "N/A";
-    
-    if (typeof project.location === 'object') {
-      // If it's stored as object but we want to show as string
-      return project.location.fullAddress || project.location.name || JSON.stringify(project.location);
-    }
-    
-    // If location is a string, return it directly
     return project.location;
   };
 
@@ -263,17 +271,16 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                       />
                     </div>
                     <div className="form-group">
-                    <label>Houses Per Floor</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={form.perFloorHouse}
-                      onChange={(e) => setForm({ ...form, perFloorHouse: e.target.value })}
-                      placeholder="e.g., 4"
-                    />
+                      <label>Houses Per Floor</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={form.perFloorHouse}
+                        onChange={(e) => setForm({ ...form, perFloorHouse: e.target.value })}
+                        placeholder="e.g., 4"
+                      />
+                    </div>
                   </div>
-                  </div>
-                  
                 </>
               ) : (
                 <div className="form-group">
@@ -296,7 +303,6 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                   onChange={(e) => setAmenitiesInput(e.target.value)}
                   placeholder="Swimming Pool, Gym, Garden, etc. (comma separated)"
                 />
-                {/* <small>Separate amenities with commas</small> */}
               </div>
 
               <div className="form-group">
@@ -307,10 +313,7 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                   accept="image/*"
                   onChange={(e) => setImages(e.target.files)}
                 />
-                {/* <small>You can select multiple images</small> */}
               </div>
-
-
 
               <div className="form-group">
                 <label>Floor Plans</label>
@@ -323,21 +326,26 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                 <small>Upload floor plans (max 3 files)</small>
               </div>
               
-              {/* ===== SIMPLE LOCATION TEXTBOX - SINGLE FIELD ===== */}
-              <div className="form-group">
-                <label>Location *</label>
-                <textarea
-                  required
-                  value={form.location}
-                  onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  placeholder="Enter complete project address (e.g., 123 Main Street, Andheri East, Mumbai - 400001)"
-                  rows="3"
-                  style={{ resize: 'vertical' }}
-                />
-                <small>Enter the complete project address</small>
-              </div>
+              {/* ===== LOCATION PICKER COMPONENT ===== */}
+              <LocationPicker
+                onLocationSelect={(address, lat, lng) => {
+                  setLocationAddress(address);
+                  setLatitude(lat);
+                  setLongitude(lng);
+                }}
+                initialAddress={locationAddress}
+                initialLat={latitude}
+                initialLng={longitude}
+              />
 
-              
+              {/* Display coordinates (optional) */}
+              {/* {latitude && longitude && (
+                <div className="coordinates-display">
+                  <small>
+                    📍 Coordinates: {parseFloat(latitude).toFixed(6)}, {parseFloat(longitude).toFixed(6)}
+                  </small>
+                </div>
+              )} */}
 
               <div className="modal-actions">
                 <button type="submit" className="btn-submit">
@@ -368,6 +376,7 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                 <th>Project Name</th>
                 <th>Type</th>
                 <th>Location</th>
+                <th>Coordinates</th>
                 <th>Total Houses</th>
                 <th>Amenities</th>
                 <th>Actions</th>
@@ -420,6 +429,15 @@ const [replaceFloorPlans, setReplaceFloorPlans] = useState(false);
                           {renderLocation(project)}
                         </span>
                       </div>
+                    </td>
+                    <td>
+                      {project.latitude && project.longitude ? (
+                        <span className="coordinates">
+                          {parseFloat(project.latitude).toFixed(4)}, {parseFloat(project.longitude).toFixed(4)}
+                        </span>
+                      ) : (
+                        "N/A"
+                      )}
                     </td>
                     <td>
                       {project.totalHouse || project.houseNumbers?.length || 0}
