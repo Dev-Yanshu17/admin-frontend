@@ -1,0 +1,214 @@
+/* =====================================
+   HOUSE / CREATE BOOKING – FULL CSS
+===================================== */
+
+.booking-container {
+  padding: 30px;
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/* =====================================
+   PAGE TITLES
+===================================== */
+
+.page-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: #1f3a5f;
+  margin-bottom: 30px;
+}
+
+/* =====================================
+   FORM CARD
+===================================== */
+
+.booking-form {
+  max-width: 1100px;
+  margin: 0 auto 50px auto;
+  background: #ffffff;
+  padding: 32px 36px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+
+  display: grid;
+  grid-template-columns: 180px 1fr 180px 1fr;
+  column-gap: 26px;
+  row-gap: 22px;
+}
+
+/* =====================================
+   LABELS
+===================================== */
+
+.booking-form label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f2a44;
+  align-self: center;
+}
+
+/* =====================================
+   INPUTS & SELECTS
+===================================== */
+
+.booking-form input,
+.booking-form select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.booking-form input::placeholder {
+  color: #94a3b8;
+}
+
+.booking-form select {
+  cursor: pointer;
+}
+
+/* Focus */
+.booking-form input:focus,
+.booking-form select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Readonly fields */
+.booking-form input[readonly] {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* =====================================
+   SUBMIT BUTTON
+===================================== */
+
+.booking-form button {
+  grid-column: span 4;
+  margin-top: 12px;
+  height: 54px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.booking-form button:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+}
+
+.booking-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =====================================
+   BOOKING LIST TABLE
+===================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+  background: #1e3a5f;
+}
+
+thead th {
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+}
+
+tbody td {
+  padding: 13px;
+  font-size: 14px;
+  color: #334155;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* =====================================
+   PAYMENT BADGES
+===================================== */
+
+.badge {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+    color: #0369a1;
+
+}
+
+/* =====================================
+   BOOKING HISTORY BUTTON
+===================================== */
+
+.history-btn {
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.history-btn:hover {
+  background: #1e40af;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1024px) {
+  .booking-form {
+    grid-template-columns: 140px 1fr;
+  }
+
+  .booking-form button {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .booking-form {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-form label {
+    margin-bottom: -8px;
+  }
+
+  .booking-form button {
+    grid-column: span 1;
+  }
+}

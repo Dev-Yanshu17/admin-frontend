@@ -1,0 +1,420 @@
+/* ===============================
+   GLOBAL PAGE
+================================ */
+.projects-page {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  color: #111827;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-add {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-add:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  background: #e5e7eb;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #d1d5db;
+}
+
+.btn-edit {
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   TABLE
+================================ */
+.projects-table-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.projects-table-container h2 {
+  color: #111827;
+  font-size: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.projects-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.projects-table th {
+  background: #f9fafb;
+  color: #4b5563;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.projects-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.projects-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.projects-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.projects-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===============================
+   PROJECT IMAGE CELL
+================================ */
+.project-image-cell {
+  width: 70px;
+}
+
+.project-thumbnail {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-thumbnail.no-image {
+  font-size: 24px;
+  color: #9ca3af;
+}
+
+/* ===============================
+   AMENITIES TAGS
+================================ */
+.amenities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amenity-tag {
+  background: #f3f4f6;
+  color: #4b5563;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.amenity-tag.more {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* ===============================
+   MODAL
+================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 16px;
+  padding: 30px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  color: #111827;
+  font-size: 24px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* ===============================
+   FORM
+================================ */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-group input.readonly-input {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+
+.form-group input[type="file"] {
+  padding: 8px;
+  background: #f9fafb;
+  border: 2px dashed #e5e7eb;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #4f46e5;
+}
+
+.form-group small {
+  display: block;
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* ===============================
+   MODAL ACTIONS
+================================ */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #e5e7eb;
+}
+
+/* ===============================
+   NO PROJECTS
+================================ */
+.no-projects {
+  text-align: center;
+  padding: 50px;
+  background: #f9fafb;
+  border-radius: 12px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* ===============================
+   ANIMATIONS
+================================ */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .projects-page {
+    padding: 15px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .projects-table {
+    font-size: 13px;
+  }
+
+  .projects-table th,
+  .projects-table td {
+    padding: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  
+  .project-thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
