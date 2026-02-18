@@ -70,12 +70,12 @@
   gap: 10px;
 }
 
-.dot {
+/* .dot {
   width: 10px;
   height: 10px;
   background: #2563eb;
   border-radius: 50%;
-}
+} */
 
 .notify-left strong {
   font-size: 14px;
