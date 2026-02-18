@@ -2,6 +2,8 @@
   padding: 24px;
 }
 
+/* ================= STATS ================= */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -17,15 +19,14 @@
 }
 
 .stat-card h3 {
-  margin: 0;
   font-size: 15px;
   color: #475569;
 }
 
 .stat-number {
-  margin-top: 10px;
   font-size: 36px;
   font-weight: 700;
+  margin-top: 10px;
   color: #2563eb;
 }
 
@@ -33,45 +34,64 @@
   color: #64748b;
 }
 
+/* ================= NOTIFICATIONS ================= */
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-top: 24px;
-}
-
-.stat-card {
-  background: #ffffff;
+.notification-box {
+  margin-top: 40px;
+  background: white;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  max-width: 600px;
 }
 
-.stat-card h3 {
-  font-size: 15px;
-  color: #475569;
+.notification-box h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #1e293b;
 }
 
-.stat-number {
-  font-size: 36px;
-  font-weight: 700;
-  margin-top: 10px;
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease;
 }
 
-/* Status colors */
-.stat-card.available .stat-number {
-  color: #16a34a;
+.notification-item:hover {
+  background: #f1f5ff;
 }
 
-.stat-card.booked .stat-number {
-  color: #f59e0b;
+.notify-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.stat-card.sold .stat-number {
-  color: #dc2626;
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #2563eb;
+  border-radius: 50%;
 }
 
-.loading {
+.notify-left strong {
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.notify-left p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.time {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.no-data {
   color: #64748b;
 }
