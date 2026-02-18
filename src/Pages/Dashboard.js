@@ -32,6 +32,7 @@ export default function Dashboard() {
     fetchDashboardData();
   }, []);
 
+
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
@@ -46,6 +47,7 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+      
     </div>
   );
 }
