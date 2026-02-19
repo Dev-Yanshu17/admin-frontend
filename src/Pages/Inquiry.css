@@ -44,21 +44,3 @@ tr:hover {
   color: #64748b;
 }
 
-.small-chart-box {
-  margin-top: 30px;
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-  max-width: 420px;
-}
-
-.small-chart-box h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
-  color: #1e293b;
-}
-
-.chart-wrapper {
-  height: 220px;
-}

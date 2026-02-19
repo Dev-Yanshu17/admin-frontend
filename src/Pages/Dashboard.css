@@ -37,7 +37,7 @@
 /* ================= NOTIFICATIONS ================= */
 
 .notification-box {
-  margin-top: 40px;
+  margin-top: 30px;
   background: white;
   padding: 20px;
   border-radius: 14px;
@@ -94,4 +94,40 @@
 
 .no-data {
   color: #64748b;
+}
+
+.small-chart-box {
+  margin-top: 50px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  max-width: 420px;
+}
+
+.small-chart-box h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.chart-wrapper {
+  height: 220px;
+}
+.dashboard-row{
+  display: flex;
+  gap:30px;
+  align-items: flex-start;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* Make both sections equal height look */
+.notification-box {
+  flex: 1.5;
+}
+
+.small-chart-box {
+  flex: 1;
+  min-width: 350px;
 }

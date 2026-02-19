@@ -1,11 +1,90 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 import "./Dashboard.css";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
+
 
 export default function Dashboard() {
   const [totalProjects, setTotalProjects] = useState(0);
   const [recentInquiries, setRecentInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [inquiries, setInquiries] = useState([]);
+
+  
+  useEffect(() => {
+    api.get("/contact").then((res) => {
+      setInquiries(res.data);
+    });
+  }, []);
+  // 📊 Count entries city-wise
+  const cityCount = inquiries.reduce((acc, item) => {
+    acc[item.location] = (acc[item.location] || 0) + 1;
+    return acc;
+  }, {});
+
+  const chartData = {
+    labels: Object.keys(cityCount),
+    datasets: [
+      {
+        label: "Inquiries per City",
+        data: Object.values(cityCount),
+
+        // 🔵 BLUE LINE STYLING
+        borderColor: "#2563eb",
+        backgroundColor: "#2563eb",
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 3,
+
+        tension: 0.4,
+        fill: false,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { stepSize: 1 },
+        grid: {
+          color: "#e5edff",
+        },
+      },
+      x: {
+        grid: {
+          color: "#f1f5ff",
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  };
+
 
   const fetchDashboardData = async () => {
     try {
@@ -63,8 +142,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 🔔 LAST WEEK INQUIRIES */}
+      <div className="dashboard-row">
+        {/* 🔔 LAST WEEK INQUIRIES */}
       <div className="notification-box">
+       
         <h2>New Inquiries (Last 7 Days)</h2>
 
         {loading ? (
@@ -87,7 +168,19 @@ export default function Dashboard() {
             </div>
           ))
         )}
+     
       </div>
+      {/* SMALL LINE CHART */}
+      <div className="small-chart-box">
+        <h3>City Wise Inquiry Summary</h3>
+        <div className="chart-wrapper">
+          <Line data={chartData} options={chartOptions} />
+        </div>
+      </div>
+
+      </div>
+
+      
     </div>
   );
 }
