@@ -42,12 +42,50 @@ export default function Bookings() {
     setProjects(res.data.data);
   };
 
-  const loadBookings = async () => {
+const loadBookings = async () => {
+  try {
     const res = await api.get("/bookings");
-    setBookings(res.data.data);
-  };
+    const bookingsData = res.data.data;
 
-  const projectMap = {};
+    // 🔥 Fetch updated pending amount for each booking
+    const updatedBookings = await Promise.all(
+      bookingsData.map(async (b) => {
+        try {
+          const historyRes = await api.get(
+            `/payment-history?bookingId=${b._id}`
+          );
+
+          const historyDoc = historyRes.data.data;
+
+          if (historyDoc) {
+            return {
+              ...b,
+              pendingAmount: historyDoc.pendingAmount,
+              totalAmount: historyDoc.totalAmount,
+              advancePayment: historyDoc.advancePayment,
+            };
+          }
+
+          return b;
+        } catch {
+          return b;
+        }
+      })
+    );
+
+    // 🔥 SORT IN ASCENDING ORDER (ID: 1 → 2 → 3)
+    const sortedBookings = updatedBookings.sort(
+      (a, b) => a.bookingId - b.bookingId
+    );
+
+    setBookings(sortedBookings);
+
+  } catch (error) {
+    console.log("Error loading bookings:", error);
+  }
+};
+
+const projectMap = {};
   projects.forEach((p) => (projectMap[p.id] = p.projectName));
 
   const handleProjectChange = async (pid) => {
