@@ -10,7 +10,7 @@ import Navbar from "./components/navbar";
 
 import Dashboard from "./Pages/Dashboard";
 import Projects from "./Pages/Projects";
-import Houses from "./Pages/House";        
+import Booking from "./Pages/Booking";        
 import Services from "./Pages/Services";
 import Login from "./Pages/Login";
 import BookingHistory from "./Pages/BookingHistory"; 
@@ -45,7 +45,7 @@ function Layout() {
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
-          <Route path="/bookings" element={<Houses />} />
+          <Route path="/bookings" element={<Booking />} />
           <Route path="/services" element={<Services />} />
           <Route path="/inquiry" element={<Inquiry />} />
           <Route

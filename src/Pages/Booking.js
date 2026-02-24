@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import "./House.css";
+import "./Booking.css";
 
 export default function Bookings() {
   const navigate = useNavigate();
@@ -90,44 +90,34 @@ export default function Bookings() {
   };
 
   const submitBooking = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      await api.post("/bookings/create", {
-        projectId: Number(form.projectId),
-        houseNumber: form.houseNumber,
-        customerName: form.customerName,
-        mobileNo: form.mobileNo,
-        paymentType: form.paymentType,
-        totalSqFeet: Number(form.totalSqFeet),
-        pricePerSqFeet: Number(form.pricePerSqFeet),
-        advancePayment: Number(form.advancePayment),
-        bookingDate: form.bookingDate,
-      });
+  try {
+    const res = await api.post("/bookings/create", {
+      projectId: Number(form.projectId),
+      houseNumber: form.houseNumber,
+      customerName: form.customerName,
+      mobileNo: form.mobileNo,
+      paymentType: form.paymentType,
+      totalSqFeet: Number(form.totalSqFeet),
+      pricePerSqFeet: Number(form.pricePerSqFeet),
+      advancePayment: Number(form.advancePayment || 0),
+      bookingDate: form.bookingDate,
+    });
 
-      alert("✅ Booking Created");
+    alert("✅ Booking Created Successfully");
+    console.log("SUCCESS:", res.data);
 
-      setForm({
-        projectId: "",
-        houseNumber: "",
-        customerName: "",
-        mobileNo: "",
-        paymentType: "cash",
-        totalSqFeet: "",
-        pricePerSqFeet: "",
-        totalAmount: "",
-        advancePayment: "",
-        pendingAmount: "",
-        bookingDate: today,
-      });
+    loadBookings();
 
-      setHouses([]);
-      loadBookings();
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    console.log("FULL ERROR:", error.response);
+    alert(error.response?.data?.message || "Booking Failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="booking-container">
