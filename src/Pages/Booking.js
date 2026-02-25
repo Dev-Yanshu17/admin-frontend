@@ -89,45 +89,33 @@ export default function Bookings() {
     }));
   };
 
-  const submitBooking = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const submitBooking = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      await api.post("/bookings/create", {
-        projectId: Number(form.projectId),
-        houseNumber: form.houseNumber,
-        customerName: form.customerName,
-        mobileNo: form.mobileNo,
-        paymentType: form.paymentType,
-        totalSqFeet: Number(form.totalSqFeet),
-        pricePerSqFeet: Number(form.pricePerSqFeet),
-        advancePayment: Number(form.advancePayment),
-        bookingDate: form.bookingDate,
-      });
+  try {
+    const res = await api.post("/bookings/create", {
+      projectId: Number(form.projectId),
+      houseNumber: form.houseNumber,
+      customerName: form.customerName,
+      mobileNo: form.mobileNo,
+      paymentType: form.paymentType,
+      totalSqFeet: Number(form.totalSqFeet),
+      pricePerSqFeet: Number(form.pricePerSqFeet),
+      advancePayment: Number(form.advancePayment || 0),
+    });
 
-      alert("✅ Booking Created");
+    alert("✅ Booking Created");
 
-      setForm({
-        projectId: "",
-        houseNumber: "",
-        customerName: "",
-        mobileNo: "",
-        paymentType: "cash",
-        totalSqFeet: "",
-        pricePerSqFeet: "",
-        totalAmount: "",
-        advancePayment: "",
-        pendingAmount: "",
-        bookingDate: today,
-      });
+    loadBookings();
 
-      setHouses([]);
-      loadBookings();
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    console.log("FULL ERROR:", err.response?.data);
+    alert(err.response?.data?.message || "Something went wrong");
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className="booking-container">
