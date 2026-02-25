@@ -33,7 +33,7 @@ export default function BookingHistory() {
   // Load all payment history
   const loadHistory = async () => {
     const res = await api.get(`/payment-history?bookingId=${bookingId}`);
-    setHistory(Array.isArray(res.data.data) ? res.data.data : []);
+    setHistory(res.data.data?.payments || []);
   };
 
   // Calculate current pending amount
@@ -171,7 +171,7 @@ export default function BookingHistory() {
           ) : (
             (() => {
               // Calculate pending after each payment
-              let runningPending = booking.totalAmount - booking.advancePayment;
+              let runningPending = booking.totalAmount;
               return history.map((h) => {
                 runningPending -= h.amountReceived;
                 if (runningPending < 0) runningPending = 0;
