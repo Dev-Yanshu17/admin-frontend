@@ -42,50 +42,12 @@ export default function Bookings() {
     setProjects(res.data.data);
   };
 
-const loadBookings = async () => {
-  try {
+  const loadBookings = async () => {
     const res = await api.get("/bookings");
-    const bookingsData = res.data.data;
+    setBookings(res.data.data);
+  };
 
-    // 🔥 Fetch updated pending amount for each booking
-    const updatedBookings = await Promise.all(
-      bookingsData.map(async (b) => {
-        try {
-          const historyRes = await api.get(
-            `/payment-history?bookingId=${b._id}`
-          );
-
-          const historyDoc = historyRes.data.data;
-
-          if (historyDoc) {
-            return {
-              ...b,
-              pendingAmount: historyDoc.pendingAmount,
-              totalAmount: historyDoc.totalAmount,
-              advancePayment: historyDoc.advancePayment,
-            };
-          }
-
-          return b;
-        } catch {
-          return b;
-        }
-      })
-    );
-
-    // 🔥 SORT IN ASCENDING ORDER (ID: 1 → 2 → 3)
-    const sortedBookings = updatedBookings.sort(
-      (a, b) => a.bookingId - b.bookingId
-    );
-
-    setBookings(sortedBookings);
-
-  } catch (error) {
-    console.log("Error loading bookings:", error);
-  }
-};
-
-const projectMap = {};
+  const projectMap = {};
   projects.forEach((p) => (projectMap[p.id] = p.projectName));
 
   const handleProjectChange = async (pid) => {
@@ -128,34 +90,44 @@ const projectMap = {};
   };
 
   const submitBooking = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await api.post("/bookings/create", {
-      projectId: Number(form.projectId),
-      houseNumber: form.houseNumber,
-      customerName: form.customerName,
-      mobileNo: form.mobileNo,
-      paymentType: form.paymentType,
-      totalSqFeet: Number(form.totalSqFeet),
-      pricePerSqFeet: Number(form.pricePerSqFeet),
-      advancePayment: Number(form.advancePayment || 0),
-      bookingDate: form.bookingDate,
-    });
+    try {
+      await api.post("/bookings/create", {
+        projectId: Number(form.projectId),
+        houseNumber: form.houseNumber,
+        customerName: form.customerName,
+        mobileNo: form.mobileNo,
+        paymentType: form.paymentType,
+        totalSqFeet: Number(form.totalSqFeet),
+        pricePerSqFeet: Number(form.pricePerSqFeet),
+        advancePayment: Number(form.advancePayment),
+        bookingDate: form.bookingDate,
+      });
 
-    alert("✅ Booking Created Successfully");
-    console.log("SUCCESS:", res.data);
+      alert("✅ Booking Created");
 
-    loadBookings();
+      setForm({
+        projectId: "",
+        houseNumber: "",
+        customerName: "",
+        mobileNo: "",
+        paymentType: "cash",
+        totalSqFeet: "",
+        pricePerSqFeet: "",
+        totalAmount: "",
+        advancePayment: "",
+        pendingAmount: "",
+        bookingDate: today,
+      });
 
-  } catch (error) {
-    console.log("FULL ERROR:", error.response);
-    alert(error.response?.data?.message || "Booking Failed");
-  } finally {
-    setLoading(false);
-  }
-};
+      setHouses([]);
+      loadBookings();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="booking-container">
