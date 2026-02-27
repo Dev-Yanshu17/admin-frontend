@@ -49,7 +49,7 @@ export default function Bookings() {
 
   setBookings(bookingList);
 
-  // 🔥 Fetch pending for each booking
+  //  Fetch pending for each booking
   const newPendingMap = {};
 
   for (let b of bookingList) {

@@ -128,18 +128,100 @@ export default function BookingHistory() {
             }
           />
 
-          <select
-            value={form.paymentMethod}
-            onChange={(e) =>
-              setForm({ ...form, paymentMethod: e.target.value })
-            }
-          >
-            <option value="cash">Cash</option>
-            <option value="upi">UPI</option>
-            <option value="bank">Bank</option>
-            <option value="cheque">Cheque</option>
-            <option value="card">Card</option>
-          </select>
+         <select
+  value={form.paymentMethod}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      paymentMethod: e.target.value,
+      paymentDetails: {} // reset details when changing method
+    })
+  }
+>
+  <option value="cash">Cash</option>
+  {/* <option value="upi">UPI</option> */}
+  <option value="bank">Bank</option>
+  <option value="cheque">Cheque</option>
+  <option value="card">Card</option>
+</select>
+
+{/* 🔥 Dynamic Payment Fields */}
+
+{form.paymentMethod === "bank" && (
+  <>
+    <input
+      required
+      placeholder="Bank Name"
+      value={form.paymentDetails.bankName || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          paymentDetails: {
+            ...form.paymentDetails,
+            bankName: e.target.value,
+          },
+        })
+      }
+    />
+
+    <input
+      required
+      type="number"
+      maxLength={12}
+      placeholder="Account Number (12 digits)"
+      value={form.paymentDetails.accountNumber || ""}
+      onChange={(e) => {
+        if (e.target.value.length <= 12) {
+          setForm({
+            ...form,
+            paymentDetails: {
+              ...form.paymentDetails,
+              accountNumber: e.target.value,
+            },
+          });
+        }
+      }}
+    />
+  </>
+)}
+
+{form.paymentMethod === "cheque" && (
+  <input
+    required
+    type="number"
+    placeholder="Cheque Number (12 digits)"
+    value={form.paymentDetails.chequeNumber || ""}
+    onChange={(e) => {
+      if (e.target.value.length <= 12) {
+        setForm({
+          ...form,
+          paymentDetails: {
+            chequeNumber: e.target.value,
+          },
+        });
+      }
+    }}
+  />
+)}
+
+{form.paymentMethod === "card" && (
+  <input
+    required
+    type="number"
+    placeholder="Card Number (16 digits)"
+    value={form.paymentDetails.cardNumber || ""}
+    onChange={(e) => {
+      if (e.target.value.length <= 16) {
+        setForm({
+          ...form,
+          paymentDetails: {
+            cardNumber: e.target.value,
+          },
+        });
+      }
+    }}
+  />
+)}
 
           <input
             required
