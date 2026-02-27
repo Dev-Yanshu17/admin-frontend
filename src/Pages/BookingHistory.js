@@ -38,13 +38,18 @@ export default function BookingHistory() {
 
   // Calculate current pending amount
   const getCurrentPending = () => {
-    if (!booking) return 0;
-    const totalPaid =
-      booking.advancePayment +
-      history.reduce((sum, h) => sum + Number(h.amountReceived), 0);
-    const pending = booking.totalAmount - totalPaid;
-    return pending < 0 ? 0 : pending;
-  };
+  if (!booking) return 0;
+
+  // ✅ Advance already exists inside history array
+  const totalPaid = history.reduce(
+    (sum, h) => sum + Number(h.amountReceived),
+    0
+  );
+
+  const pending = booking.totalAmount - totalPaid;
+
+  return pending < 0 ? 0 : pending;
+};
 
   const currentPending = getCurrentPending();
 
@@ -163,37 +168,57 @@ export default function BookingHistory() {
             <th>Pending</th>
           </tr>
         </thead>
-        <tbody>
-          {history.length === 0 ? (
-            <tr>
-              <td colSpan="4">No payments yet</td>
-            </tr>
-          ) : (
-            (() => {
-              // Calculate pending after each payment
-              let runningPending = booking.totalAmount;
-              return history.map((h) => {
-                runningPending -= h.amountReceived;
-                if (runningPending < 0) runningPending = 0;
+       <tbody>
+  {history.length === 0 ? (
+    <tr>
+      <td colSpan="4">No payments yet</td>
+    </tr>
+  ) : (
+    (() => {
+      if (!booking) return null;
 
-                return (
-                  <tr key={h._id}>
-                    <td>{new Date(h.paymentReceivedDate).toLocaleDateString()}</td>
-                    <td>{h.paymentMethod.toUpperCase()}</td>
-                    <td>₹{formatINR(h.amountReceived)}</td>
-                    <td>
-                      {runningPending <= 0 ? (
-                        <span style={{ color: "green", fontWeight: "bold" }}>SOLD</span>
-                      ) : (
-                        <>₹{formatINR(runningPending)}</>
-                      )}
-                    </td>
-                  </tr>
-                );
-              });
-            })()
-          )}
-        </tbody>
+      // ✅ Advance first, then date ASC
+      const sortedPayments = [...history].sort((a, b) => {
+        // 🔥 Advance always first
+        if (a.paymentMethod === "advance") return -1;
+        if (b.paymentMethod === "advance") return 1;
+
+        // Then sort by date
+        return (
+          new Date(a.paymentReceivedDate) -
+          new Date(b.paymentReceivedDate)
+        );
+      });
+
+      let runningPending = booking.totalAmount;
+
+      return sortedPayments.map((h) => {
+        runningPending -= Number(h.amountReceived);
+
+        if (runningPending < 0) runningPending = 0;
+
+        return (
+          <tr key={h._id}>
+            <td>
+              {new Date(h.paymentReceivedDate).toLocaleDateString()}
+            </td>
+            <td>{h.paymentMethod.toUpperCase()}</td>
+            <td>₹{formatINR(h.amountReceived)}</td>
+            <td>
+              {runningPending <= 0 ? (
+                <span style={{ color: "green", fontWeight: "bold" }}>
+                  SOLD
+                </span>
+              ) : (
+                <>₹{formatINR(runningPending)}</>
+              )}
+            </td>
+          </tr>
+        );
+      });
+    })()
+  )}
+</tbody>
       </table>
     </div>
   );

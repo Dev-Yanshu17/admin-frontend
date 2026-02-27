@@ -11,6 +11,7 @@ export default function Bookings() {
   const [houses, setHouses] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pendingMap, setPendingMap] = useState({});
 
   const [form, setForm] = useState({
     projectId: "",
@@ -42,10 +43,41 @@ export default function Bookings() {
     setProjects(res.data.data);
   };
 
-  const loadBookings = async () => {
-    const res = await api.get("/bookings");
-    setBookings(res.data.data);
-  };
+ const loadBookings = async () => {
+  const res = await api.get("/bookings");
+  const bookingList = res.data.data;
+
+  setBookings(bookingList);
+
+  // 🔥 Fetch pending for each booking
+  const newPendingMap = {};
+
+  for (let b of bookingList) {
+    try {
+      const historyRes = await api.get(
+        `/payment-history?bookingId=${b._id}`
+      );
+
+      const payments =
+        historyRes.data.data?.payments || [];
+
+      const totalPaid = payments.reduce(
+        (sum, p) => sum + Number(p.amountReceived),
+        0
+      );
+
+      const realPending =
+        Number(b.totalAmount) - totalPaid;
+
+      newPendingMap[b._id] =
+        realPending <= 0 ? 0 : realPending;
+    } catch {
+      newPendingMap[b._id] = b.totalAmount;
+    }
+  }
+
+  setPendingMap(newPendingMap);
+};
 
   const projectMap = {};
   projects.forEach((p) => (projectMap[p.id] = p.projectName));
@@ -270,11 +302,11 @@ const submitBooking = async (e) => {
               <td>₹{b.totalAmount}</td>
               <td>₹{b.advancePayment}</td>
               <td>
-                {b.pendingAmount <= 0 ? (
-                  <strong style={{ color: "green" }}>SOLD</strong>
-                ) : (
-                  `₹${b.pendingAmount}`
-                )}
+                {pendingMap[b._id] <= 0 ? (
+  <strong style={{ color: "green" }}>SOLD</strong>
+) : (
+  `₹${pendingMap[b._id] || b.totalAmount}`
+)}
               </td>
               <td>{new Date(b.bookingDate).toLocaleDateString()}</td>
               <td>
