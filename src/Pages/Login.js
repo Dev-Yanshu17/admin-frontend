@@ -24,7 +24,7 @@ export default function AdminLogin() {
       // optional: store login state
       localStorage.setItem("isAdmin", "true");
 
-      navigate("/dashboard"); // ✅ redirect
+      navigate("/dashboard"); //  redirect
     } else {
       setError("Invalid username or password");
     }

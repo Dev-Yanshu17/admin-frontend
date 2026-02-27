@@ -40,7 +40,7 @@ export default function BookingHistory() {
   const getCurrentPending = () => {
   if (!booking) return 0;
 
-  // ✅ Advance already exists inside history array
+  //Advance already exists inside history array
   const totalPaid = history.reduce(
     (sum, h) => sum + Number(h.amountReceived),
     0
@@ -145,7 +145,7 @@ export default function BookingHistory() {
   <option value="card">Card</option>
 </select>
 
-{/* 🔥 Dynamic Payment Fields */}
+{/*Dynamic Payment Fields */}
 
 {form.paymentMethod === "bank" && (
   <>
@@ -259,9 +259,9 @@ export default function BookingHistory() {
     (() => {
       if (!booking) return null;
 
-      // ✅ Advance first, then date ASC
+      //  Advance first, then date ASC
       const sortedPayments = [...history].sort((a, b) => {
-        // 🔥 Advance always first
+        // Advance always first
         if (a.paymentMethod === "advance") return -1;
         if (b.paymentMethod === "advance") return 1;
 

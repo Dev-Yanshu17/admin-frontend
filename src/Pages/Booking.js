@@ -137,7 +137,7 @@ const submitBooking = async (e) => {
       advancePayment: Number(form.advancePayment || 0),
     });
 
-    alert("✅ Booking Created");
+    alert(" Booking Created");
 
     loadBookings();
 

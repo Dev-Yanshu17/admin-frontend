@@ -342,7 +342,7 @@ const testLocationSelect = (address, lat, lng) => {
               {/* {latitude && longitude && (
                 <div className="coordinates-display">
                   <small>
-                    📍 Coordinates: {parseFloat(latitude).toFixed(6)}, {parseFloat(longitude).toFixed(6)}
+                    Coordinates: {parseFloat(latitude).toFixed(6)}, {parseFloat(longitude).toFixed(6)}
                   </small>
                 </div>
               )} */}

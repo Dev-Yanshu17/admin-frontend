@@ -17,7 +17,7 @@ export default function Services() {
   });
   const [editingId, setEditingId] = useState(null);
 
-  // 📥 Fetch services
+  //  Fetch services
   const fetchServices = async () => {
     const res = await axios.get(BASE_URL);
     setServices(res.data.data);
@@ -27,7 +27,7 @@ export default function Services() {
     fetchServices();
   }, []);
 
-  // ✏ Input handler
+  //  Input handler
   const handleChange = (e) => {
     if (e.target.name === "image") {
       setForm({ ...form, image: e.target.files[0] });
@@ -36,7 +36,7 @@ export default function Services() {
     }
   };
 
-  // ➕ / ✏ Submit
+  //  Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -58,7 +58,7 @@ export default function Services() {
     fetchServices();
   };
 
-  // ✏ Edit
+  //  Edit
   const handleEdit = (s) => {
     setEditingId(s.id);
     setForm({
@@ -71,7 +71,7 @@ export default function Services() {
     });
   };
 
-  // 🗑 Delete
+  //  Delete
   const handleDelete = async (id) => {
     if (window.confirm("Delete this service?")) {
       await axios.delete(`${BASE_URL}/${id}`);
@@ -93,7 +93,7 @@ export default function Services() {
 
   return (
     <div className="container">
-      <h1>🛠 Services Management</h1>
+      <h1> Services Management</h1>
 
       {/* FORM */}
       <form className="service-form" onSubmit={handleSubmit} encType="multipart/form-data">

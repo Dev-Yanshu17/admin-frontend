@@ -48,7 +48,7 @@ export default function Dashboard() {
         label: "Inquiries per City",
         data: Object.values(cityCount),
 
-        // 🔵 BLUE LINE STYLING
+        // BLUE LINE STYLING
         borderColor: "#2563eb",
         backgroundColor: "#2563eb",
         pointRadius: 5,
@@ -95,7 +95,7 @@ export default function Dashboard() {
 
       setTotalProjects(projectRes?.data?.totalProjects || 0);
 
-      // 📆 Show only inquiries from last 7 days (1 week)
+      // Show only inquiries from last 7 days (1 week)
       const now = new Date();
       const oneWeek = 7 * 24 * 60 * 60 * 1000; // milliseconds
 
@@ -120,7 +120,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchDashboardData();
 
-    // 🔁 auto refresh every 30 seconds
+    // auto refresh every 30 seconds
     const interval = setInterval(fetchDashboardData, 30000);
 
     return () => clearInterval(interval);
@@ -143,7 +143,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-row">
-        {/* 🔔 LAST WEEK INQUIRIES */}
+        {/* LAST WEEK INQUIRIES */}
       <div className="notification-box">
        
         <h2>New Inquiries (Last 7 Days)</h2>
