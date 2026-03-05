@@ -149,6 +149,10 @@ const submitBooking = async (e) => {
   setLoading(false);
 };
 
+const formatINR = (value) => {
+  return new Intl.NumberFormat("en-IN").format(value || 0);
+};
+
   return (
     <div className="booking-container">
       <h2 className="page-title">Create Booking</h2>
@@ -232,41 +236,44 @@ const submitBooking = async (e) => {
 
         <label>Price per Sq.Ft</label>
         <input
-          type="number"
-          value={form.pricePerSqFeet}
-          onChange={(e) => {
-            const price = Number(e.target.value || 0);
-            const sqFt = Number(form.totalSqFeet || 0);
-            const total = sqFt * price;
+  type="text"
+  value={formatINR(form.pricePerSqFeet)}
+  onChange={(e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    const price = Number(value || 0);
+    const sqFt = Number(form.totalSqFeet || 0);
+    const total = sqFt * price;
 
-            setForm((prev) => ({
-              ...prev,
-              pricePerSqFeet: price,
-              totalAmount: total,
-              pendingAmount: total - Number(prev.advancePayment || 0),
-            }));
-          }}
-        />
+    setForm((prev) => ({
+      ...prev,
+      pricePerSqFeet: price,
+      totalAmount: total,
+      pendingAmount: total - Number(prev.advancePayment || 0),
+    }));
+  }}
+/>
 
         <label>Total Amount</label>
-        <input readOnly value={form.totalAmount} />
+        <input readOnly value={formatINR(form.totalAmount)} />
 
         <label>Booking Amount</label>
         <input
-          type="number"
-          value={form.advancePayment}
-          onChange={(e) => {
-            const adv = Number(e.target.value || 0);
-            setForm((prev) => ({
-              ...prev,
-              advancePayment: adv,
-              pendingAmount: Number(prev.totalAmount || 0) - adv,
-            }));
-          }}
-        />
+  type="text"
+  value={formatINR(form.advancePayment)}
+  onChange={(e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    const adv = Number(value || 0);
+
+    setForm((prev) => ({
+      ...prev,
+      advancePayment: adv,
+      pendingAmount: Number(prev.totalAmount || 0) - adv,
+    }));
+  }}
+/>
 
         <label>Pending Amount</label>
-        <input readOnly value={form.pendingAmount} />
+        <input readOnly value={formatINR(form.pendingAmount)} />
 
         <button disabled={loading}>
           {loading ? "Booking..." : "Book House"}
@@ -299,13 +306,13 @@ const submitBooking = async (e) => {
               <td>{b.houseNumber}</td>
               <td>{b.customerName}</td>
               <td>{b.paymentType.toUpperCase()}</td>
-              <td>₹{b.totalAmount}</td>
-              <td>₹{b.advancePayment}</td>
+              <td>₹{formatINR(b.totalAmount)}</td>
+              <td>₹{formatINR(b.advancePayment)}</td>
               <td>
                 {pendingMap[b._id] <= 0 ? (
   <strong style={{ color: "green" }}>SOLD</strong>
 ) : (
-  `₹${pendingMap[b._id] || b.totalAmount}`
+  `₹${formatINR(pendingMap[b._id] || b.totalAmount)}`
 )}
               </td>
               <td>{new Date(b.bookingDate).toLocaleDateString()}</td>
