@@ -13,7 +13,7 @@ export default function BookingHistory() {
   const [form, setForm] = useState({
     amountReceived: "",
     paymentMethod: "cash",
-    paymentReceivedDate: "",
+    paymentReceivedDate: new Date().toISOString().split("T")[0],
     paymentDetails: {},
   });
 
@@ -65,7 +65,7 @@ export default function BookingHistory() {
     try {
       await api.post("/payment-history/add-payment", {
         bookingId,
-        amountReceived: Number(form.amountReceived),
+        amountReceived: Number(form.amountReceived.replace(/,/g, "")),
         paymentMethod: form.paymentMethod,
         paymentDetails: form.paymentDetails,
         paymentReceivedDate: form.paymentReceivedDate,
@@ -118,15 +118,28 @@ export default function BookingHistory() {
       {currentPending > 0 && (
         <form onSubmit={addPayment} className="booking-form">
           <input
-            required
-            type="number"
-            max={currentPending}
-            placeholder="Amount Received"
-            value={form.amountReceived}
-            onChange={(e) =>
-              setForm({ ...form, amountReceived: e.target.value })
-            }
-          />
+  required
+  type="text"
+  placeholder="Amount Received"
+  value={form.amountReceived}
+  onChange={(e) => {
+    let value = e.target.value;
+
+    // Remove everything except digits
+    value = value.replace(/\D/g, "");
+
+    // Prevent exceeding pending
+  //  if (Number(value) > currentPending) return;
+
+    // Format in Indian number system
+    const formatted = new Intl.NumberFormat("en-IN").format(value);
+
+    setForm({
+      ...form,
+      amountReceived: formatted,
+    });
+  }}
+/>
 
          <select
   value={form.paymentMethod}
@@ -224,17 +237,17 @@ export default function BookingHistory() {
 )}
 
           <input
-            required
-            type="date"
-            value={form.paymentReceivedDate}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                paymentReceivedDate: e.target.value,
-              })
-            }
-          />
-
+  required
+  type="date"
+  max={new Date().toISOString().split("T")[0]}
+  value={form.paymentReceivedDate}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      paymentReceivedDate: e.target.value,
+    })
+  }
+/>
           <button disabled={loading}>
             {loading ? "Saving..." : "Add Payment"}
           </button>
@@ -250,7 +263,7 @@ export default function BookingHistory() {
             <th>Pending</th>
           </tr>
         </thead>
-       <tbody>
+      <tbody>
   {history.length === 0 ? (
     <tr>
       <td colSpan="4">No payments yet</td>
@@ -259,22 +272,11 @@ export default function BookingHistory() {
     (() => {
       if (!booking) return null;
 
-      //  Advance first, then date ASC
-      const sortedPayments = [...history].sort((a, b) => {
-        // Advance always first
-        if (a.paymentMethod === "advance") return -1;
-        if (b.paymentMethod === "advance") return 1;
-
-        // Then sort by date
-        return (
-          new Date(a.paymentReceivedDate) -
-          new Date(b.paymentReceivedDate)
-        );
-      });
+      const orderedPayments = history; // entry-wise order
 
       let runningPending = booking.totalAmount;
 
-      return sortedPayments.map((h) => {
+      return orderedPayments.map((h) => {
         runningPending -= Number(h.amountReceived);
 
         if (runningPending < 0) runningPending = 0;
@@ -284,8 +286,11 @@ export default function BookingHistory() {
             <td>
               {new Date(h.paymentReceivedDate).toLocaleDateString()}
             </td>
+
             <td>{h.paymentMethod.toUpperCase()}</td>
+
             <td>₹{formatINR(h.amountReceived)}</td>
+
             <td>
               {runningPending <= 0 ? (
                 <span style={{ color: "green", fontWeight: "bold" }}>
