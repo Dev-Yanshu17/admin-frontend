@@ -14,6 +14,7 @@ export default function Bookings() {
   const [pendingMap, setPendingMap] = useState({});
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [selectedProjectFilter, setSelectedProjectFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -203,7 +204,24 @@ const filteredBookings = bookings.filter((b) => {
   const matchesFromDate = fromDate ? bookingDate >= fromDate : true;
   const matchesToDate = toDate ? bookingDate <= toDate : true;
 
-  return matchesSearch && matchesProject && matchesFromDate && matchesToDate;
+  // STATUS FILTER
+  const pendingAmount = pendingMap[b._id] ?? b.totalAmount;
+
+  let matchesStatus = true;
+
+  if (statusFilter === "sold") {
+    matchesStatus = pendingAmount <= 0;
+  } else if (statusFilter === "pending") {
+    matchesStatus = pendingAmount > 0;
+  }
+
+  return (
+    matchesSearch &&
+    matchesProject &&
+    matchesFromDate &&
+    matchesToDate &&
+    matchesStatus
+  );
 });
 
 const clearFilters = () => {
@@ -211,6 +229,7 @@ const clearFilters = () => {
   setSelectedProjectFilter("");
   setFromDate("");
   setToDate("");
+  setStatusFilter("");
 };
 
  return (
@@ -282,6 +301,20 @@ const clearFilters = () => {
       border: "1px solid #ccc",
     }}
   />
+  {/* Status Filter */}
+<select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+  style={{
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+  }}
+>
+  <option value="">All Status</option>
+  <option value="sold">Sold</option>
+  <option value="pending">Pending</option>
+</select>
 
   {/* Search */}
   <label style={{ marginLeft: "10px" }}>Search:</label>
