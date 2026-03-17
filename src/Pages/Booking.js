@@ -569,11 +569,11 @@ export default function Bookings() {
 
         <tbody>
 
-          {currentBookings.map((b) => (
+          {currentBookings.map((b, index) => (
 
             <tr key={b._id}>
 
-              <td>{b.bookingId}</td>
+             <td>{indexOfFirstRecord + index + 1}</td>
               <td>{projectMap[b.projectId]}</td>
               <td>{b.houseNumber}</td>
               <td>{b.customerName}</td>
