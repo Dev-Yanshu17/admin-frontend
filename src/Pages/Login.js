@@ -16,17 +16,32 @@ export default function AdminLogin() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Dummy credentials
-    if (form.username === "admin" && form.password === "admin123") {
-      // optional: store login state
-      localStorage.setItem("isAdmin", "true");
+    try {
+      const res = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-      navigate("/dashboard"); //  redirect
-    } else {
-      setError("Invalid username or password");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message);
+        return;
+      }
+
+      // Store token
+      localStorage.setItem("adminToken", data.token);
+
+      navigate("/dashboard");
+
+    } catch (err) {
+      setError("Server error");
     }
   };
 
@@ -34,7 +49,6 @@ export default function AdminLogin() {
     <div className="login-container">
       <div className="login-card">
         <h2>Admin Login</h2>
-        {/* <p className="subtitle">Sign in to admin panel</p> */}
 
         {error && <p className="error">{error}</p>}
 
@@ -71,4 +85,3 @@ export default function AdminLogin() {
     </div>
   );
 }
-

@@ -1,0 +1,90 @@
+/* Page Layout */
+.inventory-page{
+  padding:30px;
+  background:#f4f6fb;
+  min-height:100vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Title */
+.inventory-page h2{
+  font-size:26px;
+  font-weight:600;
+  margin-bottom:25px;
+  color:#333;
+}
+
+/* Table */
+.inventory-table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Table Header */
+.inventory-table thead{
+  background:linear-gradient(135deg,#5b5ce2,#6f6ff1);
+  color:white;
+}
+
+.inventory-table th{
+  padding:14px;
+  text-align:left;
+  font-size:14px;
+  font-weight:600;
+}
+
+/* Table Body */
+.inventory-table td{
+  padding:14px;
+  border-bottom:1px solid #eee;
+  font-size:14px;
+  color:#444;
+}
+
+/* Hover Effect */
+.inventory-table tbody tr:hover{
+  background:#f3f4ff;
+  transition:0.2s;
+}
+
+/* Status Colors */
+.sold{
+  color:#e11d48;
+  font-weight:600;
+}
+
+.available{
+  color:#16a34a;
+  font-weight:600;
+}
+
+/* View Button */
+.view-btn{
+  background:#5b5ce2;
+  border:none;
+  padding:7px 14px;
+  border-radius:6px;
+  color:white;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.view-btn:hover{
+  background:#3f41c8;
+}
+
+/* Responsive */
+@media(max-width:768px){
+
+.inventory-table th,
+.inventory-table td{
+padding:10px;
+font-size:12px;
+}
+
+}

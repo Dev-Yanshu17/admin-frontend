@@ -12,6 +12,8 @@
     "ajv-keywords": "^5.1.0",
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "file-saver": "^2.0.5",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
     "react": "^19.2.1",
@@ -21,7 +23,8 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.11.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

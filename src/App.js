@@ -10,12 +10,14 @@ import Navbar from "./components/navbar";
 
 import Dashboard from "./Pages/Dashboard";
 import Projects from "./Pages/Projects";
-import Booking from "./Pages/Booking";        
-import Services from "./Pages/Services";
-import Login from "./Pages/Login";
-import BookingHistory from "./Pages/BookingHistory"; 
+import Houses from "./Pages/Booking";          // Bookings page
+import AdminLogin from "./Pages/Login";
+import BookingHistory from "./Pages/BookingHistory";
+import ProjectForm from "./Pages/ProjectForm";
 import Inquiry from "./Pages/Inquiry";
-
+import PrivateRoute from "./components/PrivateRoute";
+import Inventory from "./Pages/Inventory";
+import InventoryView from "./Pages/InventoryView";
 
 
 
@@ -30,7 +32,7 @@ function Layout() {
   if (isLoginPage) {
     return (
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<AdminLogin />} />
       </Routes>
     );
   }
@@ -43,16 +45,28 @@ function Layout() {
         <Navbar />
 
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/bookings" element={<Booking />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/inquiry" element={<Inquiry />} />
           <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/bookings" element={<Houses />} />
+          <Route path="/projects/new" element={<ProjectForm />} />
+          <Route path="/projects/edit/:id" element={<ProjectForm />} />
+          <Route path="/inquiry" element={<Inquiry />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/inventory/:projectId" element={<InventoryView />} />
+
+          {/* ✅ BOOKING HISTORY ROUTE */}
+       <Route
             path="/booking-history/:bookingId"
             element={<BookingHistory />}
           />
-        </Routes>
+      </Routes>
       </div>
     </div>
   );

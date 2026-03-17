@@ -15,6 +15,10 @@ import {
 
 import { Line, Bar } from "react-chartjs-2";
 
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,19 +26,70 @@ ChartJS.register(
   LineElement,
   BarElement,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 export default function Dashboard() {
-  const [totalProjects, setTotalProjects] = useState(0);
-  const [recentInquiries, setRecentInquiries] = useState([]);
   const [allInquiries, setAllInquiries] = useState([]);
   const [projectBookings, setProjectBookings] = useState([]);
   const [projects, setProjects] = useState([]);
+
+  const [totalProjects, setTotalProjects] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [totalBookings, setTotalBookings] = useState(0);
-  const [todayBookingAmount, setTodayBookingAmount] = useState(0);
-  const [totalInquiries, setTotalInquiries] = useState(0);
+
+  const [filterType, setFilterType] = useState("today");
+
+
+  const currencyOptions = {
+   plugins: {
+    tooltip: {
+      callbacks: {
+        label: function(context) {
+          return formatIndianCurrency(context.raw);
+        }
+      }
+    }
+  },
+  scales: {
+    y: {
+      ticks: {
+        callback: function(value) {
+          return formatIndianCurrency(value);
+        }
+      }
+    }
+  }
+};
+
+ const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: true
+    },
+    datalabels: {
+      anchor: "end",   // attach to top of bar
+      align: "top",    // show above bar
+      color: "",
+      font: {
+        weight: "bold",
+        size: 0
+      },
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        stepSize: 1,           // show 1,2,3,4
+        callback: function(value) {
+          return Number.isInteger(value) ? value : null;
+        }
+      }
+    }
+  }
+};
 
   /* ================= FETCH DATA ================= */
 
@@ -50,43 +105,11 @@ export default function Dashboard() {
 
       setTotalProjects(projectRes?.data?.totalProjects || 0);
 
-      const inquiries = inquiryRes?.data || [];
-      setAllInquiries(inquiries);
-      setTotalInquiries(inquiries.length);
+      setAllInquiries(inquiryRes?.data || []);
 
       setProjectBookings(bookingRes?.data?.data || []);
 
-      const bookings = bookingRes?.data?.data || [];
-
-setProjectBookings(bookings);
-setTotalBookings(bookings.length);
-
-// ✅ Calculate today's booking amount
-const today = new Date().toISOString().split("T")[0];
-
-const todayTotal = bookings
-  .filter((b) => {
-    const bookingDate = new Date(b.bookingDate)
-      .toISOString()
-      .split("T")[0];
-    return bookingDate === today;
-  })
-  .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
-
-setTodayBookingAmount(todayTotal);
-
-      // 🔔 Last 7 days inquiries
-      const now = new Date();
-      const oneWeek = 7 * 24 * 60 * 60 * 1000;
-
-      const filtered = inquiries
-        .filter((item) => {
-          const createdTime = new Date(item.createdAt);
-          return now - createdTime <= oneWeek;
-        })
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      setRecentInquiries(filtered);
+      setProjects(Array.isArray(projectListRes?.data) ? projectListRes.data : []);
     } catch (err) {
       console.error("Dashboard load failed:", err);
     } finally {
@@ -96,41 +119,119 @@ setTodayBookingAmount(todayTotal);
 
   useEffect(() => {
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
   }, []);
+
+  /* ================= FILTER ================= */
+
+  const getFilteredData = (data, field) => {
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+
+    if (filterType === "today") {
+      return data.filter(
+        (i) => new Date(i[field]).toISOString().split("T")[0] === todayStr
+      );
+    }
+
+    if (filterType === "yesterday") {
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      const yStr = y.toISOString().split("T")[0];
+
+      return data.filter(
+        (i) => new Date(i[field]).toISOString().split("T")[0] === yStr
+      );
+    }
+
+    if (filterType === "week") {
+      const weekAgo = new Date();
+      weekAgo.setDate(today.getDate() - 7);
+
+      return data.filter((i) => new Date(i[field]) >= weekAgo);
+    }
+
+
+        if (filterType === "month") {
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+      return data.filter((i) => new Date(i[field]) >= monthAgo);
+    }
+
+    return data;
+  };
+
+  const filteredBookings = useMemo(() => {
+    return getFilteredData(projectBookings, "bookingDate");
+  }, [projectBookings, filterType]);
+
+  const filteredInquiries = useMemo(() => {
+    return getFilteredData(allInquiries, "createdAt");
+  }, [allInquiries, filterType]);
+
+  /* ================= TOTALS ================= */
+
+  const totalBookings = filteredBookings.length;
+  const totalInquiries = filteredInquiries.length;
+
+  const totalBookingAmount = useMemo(() => {
+    return filteredBookings.reduce(
+      (sum, b) => sum + Number(b.totalAmount || 0),
+      0
+    );
+  }, [filteredBookings]);
 
   /* ================= CITY COUNT ================= */
 
   const cityCount = useMemo(() => {
-    return allInquiries.reduce((acc, item) => {
+    return filteredInquiries.reduce((acc, item) => {
       const city = item.location || "Unknown";
       acc[city] = (acc[city] || 0) + 1;
       return acc;
     }, {});
-  }, [allInquiries]);
+  }, [filteredInquiries]);
 
   /* ================= PROJECT BOOKING COUNT ================= */
 
   const projectBookingCount = useMemo(() => {
     const map = {};
 
-    projectBookings.forEach((booking) => {
-      const projectId = booking.projectId;
-      map[projectId] = (map[projectId] || 0) + 1;
+    filteredBookings.forEach((booking) => {
+      const id = booking.projectId;
+      map[id] = (map[id] || 0) + 1;
     });
 
     return map;
+  }, [filteredBookings]);
+
+ const projectMap = useMemo(() => {
+  const map = {};
+
+  projects.forEach((p) => {
+    map[p._id || p.id] = p.projectName;
+  });
+
+  return map;
+}, [projects]);
+
+  /* ================= MONTHLY REVENUE ================= */
+
+  const monthlyRevenue = useMemo(() => {
+    const months = {};
+
+    projectBookings.forEach((b) => {
+      const d = new Date(b.bookingDate);
+
+      const month =
+        d.toLocaleString("default", { month: "short" }) +
+        " " +
+        d.getFullYear();
+
+      months[month] = (months[month] || 0) + Number(b.totalAmount || 0);
+    });
+
+    return months;
   }, [projectBookings]);
-
-  // Map projectId to projectName
-  const projectMap = useMemo(() => {
-    const map = {};
-    projects.forEach((p) => {
-      map[p.id] = p.projectName;
-    });
-    return map;
-  }, [projects]);
 
   /* ================= CHART DATA ================= */
 
@@ -142,9 +243,6 @@ setTodayBookingAmount(todayTotal);
         data: Object.values(cityCount),
         borderColor: "#2563eb",
         backgroundColor: "#2563eb",
-        borderWidth: 3,
-        tension: 0.4,
-        fill: false,
       },
     ],
   };
@@ -155,105 +253,196 @@ setTodayBookingAmount(todayTotal);
     ),
     datasets: [
       {
-        label: "Bookings per Project",
+        label: "Bookings",
         data: Object.values(projectBookingCount),
         backgroundColor: "#16a34a",
       },
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: true },
-    },
+  const revenueChartData = {
+    labels: Object.keys(monthlyRevenue),
+    datasets: [
+      {
+        label: "Monthly Revenue",
+        data: Object.values(monthlyRevenue),
+        backgroundColor: "#f59e0b",
+      },
+    ],
   };
+
+  /* ================= EXPORT EXCEL ================= */
+
+  const exportExcel = () => {
+    const data = filteredBookings.map((b) => ({
+      Project: projectMap[b.projectId],
+      Amount: b.totalAmount,
+      Date: b.bookingDate,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Bookings");
+
+    const buffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([buffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "booking-report.xlsx");
+  };
+
+  /* ================= PROJECT SALES ================= */
+
+const projectSales = useMemo(() => {
+  const map = {};
+
+  filteredBookings.forEach((booking) => {
+    const id = booking.projectId;
+    const amount = Number(booking.totalAmount || 0);
+
+    map[id] = (map[id] || 0) + amount;
+  });
+
+  return map;
+}, [filteredBookings]);
+
+/* ================= PROJECT SALES CHART ================= */
+
+const projectSalesChartData = {
+  labels: Object.keys(projectSales).map(
+    (id) => projectMap[id] || `Project ${id}`
+  ),
+  datasets: [
+    {
+      label: "Project Sales (₹)",
+      data: Object.values(projectSales),
+      backgroundColor: "#9333ea",
+    },
+  ],
+};
+
+function formatIndianCurrency(num) {
+
+  num  = Math.round(num); // Round to nearest integer
+  if (num >= 10000000) {
+    return "₹ " + (num / 10000000).toFixed(2) + " Cr";
+  } else if (num >= 100000) {
+    return "₹ " + (num / 100000).toFixed(2) + " L";
+  } else if (num >= 1000) {
+    return "₹ " + (num / 1000).toFixed(2) + " K";
+  } else {
+    return "₹ " + num;
+  }
+}
 
   /* ================= UI ================= */
 
   return (
     <div className="dashboard">
-      <h1>Welcome to Dream D'wello....</h1>
+      <h1>Welcome to Dream D'wello</h1>
 
-      {/* 📊 TOTAL PROJECT CARD */}
-    <div className="stats-grid">
+      {/* QUICK FILTERS */}
 
-  <div className="stat-card">
-    <h3>Total Projects</h3>
-    <p className="stat-number">{totalProjects}</p>
-  </div>
+      <div className="quick-filters">
+        <button
+          className={filterType === "today" ? "active" : ""}
+          onClick={() => setFilterType("today")}
+        >
+          Today
+        </button>
 
-  <div className="stat-card">
-    <h3>Total Bookings</h3>
-    <p className="stat-number">{totalBookings}</p>
-  </div>
+        <button
+          className={filterType === "yesterday" ? "active" : ""}
+          onClick={() => setFilterType("yesterday")}
+        >
+          Yesterday
+        </button>
 
-  <div className="stat-card">
-    <h3>Today's Booking Amount</h3>
-    <p className="stat-number">
-      ₹{new Intl.NumberFormat("en-IN").format(todayBookingAmount)}
-    </p>
-  </div>
-  
-  <div className="stat-card">
-    <h3>Total Inquiries</h3>
-    <p className="stat-number">{totalInquiries}</p>
-  </div>
+        <button
+          className={filterType === "week" ? "active" : ""}
+          onClick={() => setFilterType("week")}
+        >
+          This Week
+        </button>
 
-</div>
+                <button
+          className={filterType === "month" ? "active" : ""}
+          onClick={() => setFilterType("month")}
+        >
+          This Month
+        </button>
+      </div>
 
-      <div className="dashboard-row">
-
-{/* 🔔 LAST WEEK INQUIRIES */}
-<div className="notification-box">
-  <h2>New Inquiries</h2>
-  
-  <div className="notification-list">
-    {loading ? (
-      <div className="loading-state">Loading inquiries...</div>
-    ) : recentInquiries.length === 0 ? (
-      <div className="no-data-state">No new inquiries this week</div>
-    ) : (
-      recentInquiries.map((item) => (
-        <div key={item._id} className="notification-item">
-          <div className="notification-item-left">
-            <strong>{item.firstName}</strong>
-            <span className="location">{item.location}</span>
-          </div>
-          <span className="date">
-            {new Date(item.createdAt).toLocaleDateString()}
-          </span>
+      {/* STATS */}
+<div className="dashboard-row">
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Total Bookings</h3>
+          <p className="stat-number">{totalBookings}</p>
         </div>
-      ))
-    )}
-  </div>
-</div>
 
-{/* 📈 CITY CHART */}
+        <div className="stat-card">
+          <h3>Total Booking Amount</h3>
+          <p className="stat-number"> ₹{new Intl.NumberFormat("en-IN").format(totalBookingAmount)}</p>
+        </div>
+
+        <div className="stat-card">
+          <h3>Total Inquiries</h3>
+          <p className="stat-number">{totalInquiries}</p>
+        </div>
+      </div>
+
+      <div className="small-chart-box">
+          <h3>City Inquiry Chart</h3>
+          <div className="chart-wrapper">
+            <Line data={cityChartData} options={chartOptions} />
+          </div>
+        </div>
+
+        <div className="small-chart-box">
+          <h3>Project Booking Chart</h3>
+          <div className="chart-wrapper">
+            <Bar data={projectChartData}  options={chartOptions }/>
+          </div>
+        </div>
+</div>
+      
+
+      {/* CHARTS */}
+       <div className="dashboard-row"> 
+
+          {/* INQUIRIES */}
+
+      <div className="notification-box">
+        <h2>Recent Inquiries</h2>
+
+        <div className="notification-list">
+          {filteredInquiries.map((item) => (
+            <div key={item._id} className="notification-item">
+              <div>
+                <strong>{item.firstName}</strong>
+                <div className="location">{item.location}</div>
+              </div>
+
+              <div className="date">
+                {new Date(item.createdAt).toLocaleDateString()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 <div className="small-chart-box">
-  <h3>City Wise Inquiry Summary</h3>
+  <h3>Project Wise Sales</h3>
   <div className="chart-wrapper">
-    {loading ? (
-      <div className="loading-state">Loading chart...</div>
-    ) : (
-      <Line data={cityChartData} options={chartOptions} />
-    )}
+    <Bar data={projectSalesChartData} options={{ ...chartOptions, ...currencyOptions}}/>
   </div>
 </div>
-
-{/* 📊 PROJECT BOOKING CHART */}
-<div className="small-chart-box">
-  <h3>Project Wise Booking Summary</h3>
-  <div className="chart-wrapper">
-    {loading ? (
-      <div className="loading-state">Loading chart...</div>
-    ) : (
-      <Bar data={projectChartData} options={chartOptions} />
-    )}
-  </div>
-</div>
-
       </div>
     </div>
   );
