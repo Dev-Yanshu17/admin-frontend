@@ -30,7 +30,8 @@ const testLocationSelect = (address, lat, lng) => {
     totalWings: "",
     totalFloors: "",
     perFloorHouse: "",
-    totalPlots: ""
+    totalPlots: "",
+    description:""
   });
 
   /* ================= FETCH PROJECTS ================= */
@@ -57,6 +58,7 @@ const testLocationSelect = (address, lat, lng) => {
 
     // ===== BASIC INFO =====
     formData.append("projectName", form.projectName);
+    formData.append("description", form.description);
     formData.append("projectType", form.projectType);
     formData.append("replaceImages", replaceImages);
     formData.append("replaceFloorPlans", replaceFloorPlans);
@@ -128,7 +130,8 @@ const testLocationSelect = (address, lat, lng) => {
       totalWings: "",
       totalFloors: "",
       perFloorHouse: "",
-      totalPlots: ""
+      totalPlots: "",
+       description: "" 
     });
     setLocationAddress("");
     setLatitude("");
@@ -146,6 +149,7 @@ const testLocationSelect = (address, lat, lng) => {
     
     setForm({
       projectName: project.projectName || "",
+      description: project.description || ""  ,
       projectType: project.projectType || "flat",
       totalWings: project.totalWings || "",
       totalFloors: project.totalFloors || "",
@@ -231,6 +235,15 @@ const testLocationSelect = (address, lat, lng) => {
                   value={form.projectName}
                   onChange={(e) => setForm({ ...form, projectName: e.target.value })}
                   placeholder="Enter project name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Enter project description..."
+                  rows="3"
                 />
               </div>
 
