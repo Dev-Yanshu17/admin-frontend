@@ -11,7 +11,7 @@ export default function Navbar() {
   const admin = {
     name: "Dream D'wello Builders Ltd.",
     mobile: "+91 9876543210",
-    email: "admin@gmail.com",
+    // email: "admin@gmail.com",
   };
 
   const handleLogout = async () => {
@@ -40,7 +40,7 @@ export default function Navbar() {
           <div className="admin-dropdown">
             <p><strong>{admin.name}</strong></p>
             <p>Mobile:{admin.mobile}</p>
-            <p>Email: {admin.email}</p>
+            {/* <p>Email: {admin.email}</p> */}
             <hr />
             <button
               className="logout-btn"

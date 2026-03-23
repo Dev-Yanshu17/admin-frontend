@@ -23,6 +23,7 @@ const testLocationSelect = (address, lat, lng) => {
   const [locationAddress, setLocationAddress] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [locationError, setLocationError] = useState("");
 
   const [form, setForm] = useState({
     projectName: "",
@@ -84,6 +85,13 @@ const testLocationSelect = (address, lat, lng) => {
         .map((a) => a.trim())
         .filter((a) => a)
         .forEach((a) => formData.append("amenities", a));
+    }
+
+    if (!locationAddress || !latitude || !longitude) {
+      setLocationError("Location is required");
+        return;
+    } else {
+      setLocationError("");
     }
 
     // ===== FILES =====
@@ -244,6 +252,7 @@ const testLocationSelect = (address, lat, lng) => {
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Enter project description..."
                   rows="3"
+                  required
                 />
               </div>
 
@@ -271,6 +280,7 @@ const testLocationSelect = (address, lat, lng) => {
                         value={form.totalWings}
                         onChange={(e) => setForm({ ...form, totalWings: e.target.value })}
                         placeholder="e.g., 3"
+                        required
                       />
                     </div>
                     <div className="form-group">
@@ -281,6 +291,7 @@ const testLocationSelect = (address, lat, lng) => {
                         value={form.totalFloors}
                         onChange={(e) => setForm({ ...form, totalFloors: e.target.value })}
                         placeholder="e.g., 10"
+                        required
                       />
                     </div>
                     <div className="form-group">
@@ -291,6 +302,7 @@ const testLocationSelect = (address, lat, lng) => {
                         value={form.perFloorHouse}
                         onChange={(e) => setForm({ ...form, perFloorHouse: e.target.value })}
                         placeholder="e.g., 4"
+                        required
                       />
                     </div>
                   </div>
@@ -304,6 +316,7 @@ const testLocationSelect = (address, lat, lng) => {
                     value={form.totalPlots}
                     onChange={(e) => setForm({ ...form, totalPlots: e.target.value })}
                     placeholder="Enter total number of plots"
+                    required
                   />
                 </div>
               )}
@@ -315,6 +328,7 @@ const testLocationSelect = (address, lat, lng) => {
                   value={amenitiesInput}
                   onChange={(e) => setAmenitiesInput(e.target.value)}
                   placeholder="Swimming Pool, Gym, Garden, etc. (comma separated)"
+                  required
                 />
               </div>
 
@@ -325,6 +339,7 @@ const testLocationSelect = (address, lat, lng) => {
                   multiple
                   accept="image/*"
                   onChange={(e) => setImages(e.target.files)}
+                  required
                 />
               </div>
 
@@ -335,6 +350,7 @@ const testLocationSelect = (address, lat, lng) => {
                   multiple
                   accept="image/*,.pdf"
                   onChange={(e) => setFloorPlans(e.target.files)}
+                  required
                 />
                 <small>Upload floor plans (max 3 files)</small>
               </div>
@@ -345,11 +361,17 @@ const testLocationSelect = (address, lat, lng) => {
                   setLocationAddress(address);
                   setLatitude(lat);
                   setLongitude(lng);
+                  setLocationError("");
                 }}
                 initialAddress={locationAddress}
                 initialLat={latitude}
                 initialLng={longitude}
               />
+              {locationError && (
+                <p style={{ color: "red", fontSize: "13px" }}>
+                  {locationError}
+                </p>
+              )}
 
               {/* Display coordinates (optional) */}
               {/* {latitude && longitude && (
