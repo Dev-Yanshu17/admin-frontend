@@ -157,6 +157,26 @@ export default function Bookings() {
   const submitBooking = async (e) => {
 
     e.preventDefault();
+    if (!/^[0-9]{10}$/.test(form.mobileNo)) {
+        alert("Mobile number must be 10 digits");
+        return;
+      }
+
+      if (form.customerName.length < 3) {
+        alert("Customer name must be at least 3 characters");
+        return;
+      }
+
+      if (Number(form.totalSqFeet) <= 0) {
+        alert("Enter valid Sq.Ft");
+        return;
+      }
+
+      if (Number(form.pricePerSqFeet) <= 0) {
+        alert("Enter valid price");
+        return;
+      }
+
 
     setLoading(true);
 
@@ -189,6 +209,7 @@ export default function Bookings() {
         bookingDate: today,
       });
 
+      
       setShowForm(false);
 
       await loadBookings();
@@ -463,6 +484,7 @@ export default function Bookings() {
         <label>Customer Name</label>
         <input
           required
+          minLength={3}
           value={form.customerName}
           onChange={(e) =>
             setForm({ ...form, customerName: e.target.value })
@@ -473,6 +495,8 @@ export default function Bookings() {
         <input
           required
           maxLength={10}
+          pattern="[0-9]{10}"
+          title="Enter 10 digit mobile number"
           value={form.mobileNo}
           onChange={(e) =>
             setForm({ ...form, mobileNo: e.target.value })
