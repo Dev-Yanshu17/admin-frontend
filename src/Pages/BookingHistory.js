@@ -54,38 +54,43 @@ export default function BookingHistory() {
   const currentPending = getCurrentPending();
 
   // Add a new payment
-  const addPayment = async (e) => {
-    e.preventDefault();
+ const addPayment = async (e) => {
+  e.preventDefault();
 
-    if (Number(form.amountReceived) > currentPending)
-      return alert("Amount exceeds pending");
+  const enteredAmount = Number(form.amountReceived.replace(/,/g, ""));
 
-    setLoading(true);
+  // Proper validation
+  if (enteredAmount > currentPending) {
+    alert("Amount is greater than pending amount");
+    return;
+  }
 
-    try {
-      await api.post("/payment-history/add-payment", {
-        bookingId,
-        amountReceived: Number(form.amountReceived.replace(/,/g, "")),
-        paymentMethod: form.paymentMethod,
-        paymentDetails: form.paymentDetails,
-        paymentReceivedDate: form.paymentReceivedDate,
-      });
+  setLoading(true);
 
-      // Reset form
-      setForm({
-        amountReceived: "",
-        paymentMethod: "cash",
-        paymentReceivedDate: "",
-        paymentDetails: {},
-      });
+  try {
+    await api.post("/payment-history/add-payment", {
+      bookingId,
+      amountReceived: enteredAmount,
+      paymentMethod: form.paymentMethod,
+      paymentDetails: form.paymentDetails,
+      paymentReceivedDate: form.paymentReceivedDate,
+    });
 
-      // Reload data
-      await loadHistory();
-      await loadBooking();
-    } finally {
-      setLoading(false);
-    }
-  };
+    setForm({
+      amountReceived: "",
+      paymentMethod: "cash",
+      paymentReceivedDate: "",
+      paymentDetails: {},
+    });
+
+    await loadHistory();
+    await loadBooking();
+  } catch (err) {
+    alert(err.response?.data?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Format number as INR
   const formatINR = (v) => new Intl.NumberFormat("en-IN").format(v || 0);
